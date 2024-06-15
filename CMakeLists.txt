@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.5)
+project( AR_Game )
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+add_executable( AR_Game src/main.cpp )
+target_link_libraries( AR_Game ${OpenCV_LIBS} )

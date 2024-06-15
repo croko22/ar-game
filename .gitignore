@@ -1,0 +1,21 @@
+# Archivos temporales y de compilación
+build/*
+cmake-build-*
+
+# Archivos de configuración específicos del sistema
+# (Ajustar según sea necesario)
+.cache/
+.idea/
+.vscode/
+*~
+
+# Archivos de salida generados
+*.o
+*.so
+*.elf
+
+# Documentación generada
+doc/*
+
+# Archivos de prueba
+test/*
