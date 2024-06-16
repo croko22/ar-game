@@ -22,6 +22,17 @@ int main(int, char **)
     {
         // capture the next frame from the webcam
         camera >> frame;
+
+        //* AIM MARK
+        // calculate the center of the frame
+        cv::Point center(frame.cols / 2, frame.rows / 2);
+        // define the length of the aim mark lines
+        int lineLength = 50;
+        // draw vertical line
+        cv::line(frame, cv::Point(center.x, center.y - lineLength / 2), cv::Point(center.x, center.y + lineLength / 2), cv::Scalar(0, 0, 255), 2);
+        // draw horizontal line
+        cv::line(frame, cv::Point(center.x - lineLength / 2, center.y), cv::Point(center.x + lineLength / 2, center.y), cv::Scalar(0, 0, 255), 2);
+
         // show the image on the window
         cv::imshow("Webcam", frame);
         // wait (10ms) for esc key to be pressed to stop
