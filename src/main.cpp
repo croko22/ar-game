@@ -4,7 +4,9 @@
 int main(int, char **)
 {
     // open the first webcam plugged in the computer
-    cv::VideoCapture camera(0); // in linux check $ ls /dev/video0
+    // cv::VideoCapture camera(0); // in linux check $ ls /dev/video0
+    //* IP WEBCAM - droidcam
+    cv::VideoCapture camera("http://192.168.1.13:4747/video");
     if (!camera.isOpened())
     {
         std::cerr << "ERROR: Could not open camera" << std::endl;
