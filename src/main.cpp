@@ -19,6 +19,31 @@ void drawAxis(cv::Mat &_image, cv::InputArray _cameraMatrix, cv::InputArray _dis
     cv::line(_image, imagePoints[0], imagePoints[3], cv::Scalar(255, 0, 0), 3);
 }
 
+void draw3DObjectProjection(cv::Mat &image, const cv::Mat &cameraMatrix, const cv::Mat &distCoeffs,
+                            const cv::Mat &rvec, const cv::Mat &tvec, const std::vector<cv::Point3f> &objectPoints)
+{
+    // Project 3D points to 2D plane
+    std::vector<cv::Point2f> imagePoints;
+    cv::projectPoints(objectPoints, rvec, tvec, cameraMatrix, distCoeffs, imagePoints);
+
+    // Draw the projected points and lines connecting them on the image
+    // Assuming objectPoints form a cube for example purposes. Adjust drawing logic based on your object's topology.
+    for (size_t i = 0; i < imagePoints.size(); ++i)
+    {
+        // Draw points
+        cv::circle(image, imagePoints[i], 5, cv::Scalar(0, 255, 0), -1);
+        // Optionally, draw lines connecting points. Example for a cube:
+        if (i < 3)
+            cv::line(image, imagePoints[i], imagePoints[i + 1], cv::Scalar(255, 0, 0), 2);
+        if (i == 3)
+            cv::line(image, imagePoints[i], imagePoints[0], cv::Scalar(255, 0, 0), 2);
+        // Connect the dots as needed for your object
+    }
+    // Example for connecting top and bottom points of a cube
+    // cv::line(image, imagePoints[0], imagePoints[4], cv::Scalar(255, 0, 0), 2);
+    // Add more lines as per the 3D object's structure
+}
+
 int main()
 {
     int board_width = 9, board_height = 6, num_imgs = 50;
@@ -160,6 +185,25 @@ int main()
     fs << "board_height" << board_height;
     fs << "square_size" << square_size;
     printf("Done Calibration\n");
+
+    // Assuming K, D, rvec, tvec are already defined from your calibration process
+    // cv::Mat K, D, rvec, tvec;
+    cv::Mat rvec, tvec;
+
+    // Define your 3D object points here (example for a cube)
+    std::vector<cv::Point3f> objectPoints = {
+        {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, -1}, {1, 0, -1}, {1, 1, -1}, {0, 1, -1}};
+
+    // Load or capture an image to project the 3D object onto
+    cv::Mat image;
+    // image = cv::imread("path/to/your/image.jpg"); // Or capture from camera
+
+    // Project and draw the 3D object
+    draw3DObjectProjection(image, K, D, rvec, tvec, objectPoints);
+
+    // Display the result
+    cv::imshow("Projected 3D Object", image);
+    cv::waitKey(0);
 
     return 0;
 }

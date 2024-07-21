@@ -23,11 +23,6 @@ int main()
             points.push_back(K::Point_3(x, y, z));
     }
 
-    // for (auto p : points)
-    // {
-    //     std::cout << p << std::endl;
-    // }
-
     DT3 dt3(points.begin(), points.end());
     CGAL::draw(dt3);
 
