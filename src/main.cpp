@@ -17,24 +17,6 @@ void drawAxis(cv::Mat &_image, cv::InputArray _cameraMatrix, cv::InputArray _dis
     cv::line(_image, imagePoints[0], imagePoints[3], cv::Scalar(255, 0, 0), 3);
 }
 
-void draw3DObjectProjection(cv::Mat &image, const cv::Mat &cameraMatrix, const cv::Mat &distCoeffs,
-                            const cv::Mat &rvec, const cv::Mat &tvec, const std::vector<cv::Point3f> &objectPoints)
-{
-    std::vector<cv::Point2f> imagePoints;
-    cv::projectPoints(objectPoints, rvec, tvec, cameraMatrix, distCoeffs, imagePoints);
-
-    for (size_t i = 0; i < imagePoints.size(); ++i)
-    {
-
-        cv::circle(image, imagePoints[i], 5, cv::Scalar(0, 255, 0), -1);
-
-        if (i < 3)
-            cv::line(image, imagePoints[i], imagePoints[i + 1], cv::Scalar(255, 0, 0), 2);
-        if (i == 3)
-            cv::line(image, imagePoints[i], imagePoints[0], cv::Scalar(255, 0, 0), 2);
-    }
-}
-
 int main()
 {
     int board_width = 9, board_height = 6, num_imgs = 50;
@@ -44,19 +26,16 @@ int main()
     cv::Size boardSize(board_width, board_height);
     cv::Mat matImg, src_gray;
 
-    cv::VideoCapture capture(0);
-
+    // cv::VideoCapture capture(0);
+    cv::VideoCapture capture("http://192.168.1.14:4747/video");
     std::vector<std::vector<cv::Point2f>> image_points;
-
     std::vector<std::vector<cv::Point3f>> object_points;
 
     while (true)
     {
         capture >> matImg;
         if (matImg.empty())
-        {
             break;
-        }
 
         std::vector<cv::Point2f> corners;
 
@@ -64,7 +43,6 @@ int main()
 
         if (found)
         {
-
             cv::Size winSize = cv::Size(5, 5);
             cv::Size zeroZone = cv::Size(-1, -1);
             cv::TermCriteria criteria = cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 40, 0.001);
@@ -148,14 +126,15 @@ int main()
     fs << "square_size" << square_size;
     printf("Done Calibration\n");
 
+    //* Project 3D object
     cv::Mat rvec, tvec;
-
     std::vector<cv::Point3f> objectPoints = {
         {0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 0, -1}, {1, 0, -1}, {1, 1, -1}, {0, 1, -1}};
 
     cv::Mat image;
 
-    draw3DObjectProjection(image, K, D, rvec, tvec, objectPoints);
+    // draw3DObjectProjection(image, K, D, rvec, tvec, objectPoints);
+    cv::projectPoints(objectPoints, rvec, tvec, K, D, image);
 
     cv::imshow("Projected 3D Object", image);
     cv::waitKey(0);
